@@ -42,18 +42,63 @@ describe("Pokemon API Server", () => {
     });
 
     //3
-    describe.only("GET /api/pokemon - It should return the Pokemon with the given id", () => {
+    describe("GET /api/pokemon - It should return the Pokemon with the given id", () => {
       it("It should return the Pokemon with the given id", async () => {
         const res = await request.get("/api/pokemon/001");
-        // console.log("BBBBBBBB", (JSON.parse(res.text.name))
-
-        //res.should.be.json;
-
         JSON.parse(res.text).name.should.equal("Bulbasaur");
         // console.log('MEOOOOOOO', res.text)
-        // res.name.should.equal("Bulbasaur");
+        //res.name.should.equal("Bulbasaur");
       });
     });
+
+    //4 TODO It should return the Pokemon with given name.
+    describe("GET /api/pokemon - It should return the Pokemon with the given name", () => {
+      it("It should return the Pokemon with the given name", async () => {
+        const res = await request.get("/api/pokemon/Bulbasaur");
+        const result = JSON.parse(res.text || null);
+        console.log("RESSSSS", result.name);
+        result.name.should.equal("Bulbasaur");
+      });
+    });
+
+    //5 It should allow you to make partial modifications to a Pokemon
+    describe("PATCH /api/pokemon/:idOrName - It should allow you to make partial modifications to a Pokemon", () => {
+      it("it should allow to make partial modifications to a Pokemon", async () => {
+        const res = await request.patch("/api.pokemon/:idOrName");
+        // JSON.parse(res.text).id.should.equal("001");
+        //console.log("REESSSSS",res.text)
+        res.text.id.should.equal("001");
+      });
+    });
+
+    //6 DELETE
+    describe("DELETE /api/pokemon/:idOrName - It should delete the given Pokemon", () => {
+      it("It should delete the given Pokemon", async () => {
+        const res = await request.delete("/api/pokemon/Bulbasaur");
+
+        JSON.parse(res.text).name.should.equal(undefined);
+      });
+    });
+
+    //7 GET It should return the evolutions a Pokemon has. /api/pokemon/:idOrName/evolutions
+    describe("GET /api/pokemon/:idOrName/evolutions - It should return the evolutions a Pokemon has", () => {
+      it("It should return the evolutions a Pokemon has", async () => {
+        const res = await request.get("/api/pokemon/staryu/evolutions");
+        const result = JSON.parse(res);
+        const expect = `[ { "id": 121, "name": "Starmie" } ]`;
+
+        result.should.equal(expect);
+      });
+    });
+
+    //8 GET For evolved Pokemon, this should return it's previous evolutions
+
+    //9 GET It should return a list of all available types
+    //It is able to take a query parameter limit=n that makes the endpoint only return n types
+
+    //10 POST Adds a type
+
+    //11 DELETE Deletes the given type
   });
 });
 
