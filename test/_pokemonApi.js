@@ -19,6 +19,7 @@ describe("Pokemon API Server", () => {
     request = chai.request(server);
   });
 
+  //1
   describe("GET /api/pokemon - returning full list pokemon", () => {
     it("should return json for full list pokemon", async () => {
       const res = await request.get("/api/pokemon").query({ limit: 3 });
@@ -30,6 +31,7 @@ describe("Pokemon API Server", () => {
     });
   });
 
+  //2
   describe("POST /api/pokemon", () => {
     it("It should add a Pokemon. ", async () => {
       // const newPoke = {
@@ -127,8 +129,26 @@ describe("Pokemon API Server", () => {
 
   //9 GET It should return a list of all available types
   //It is able to take a query parameter limit=n that makes the endpoint only return n types
+  //M
+  describe("GET /api/types - returning full list types", () => {
+    it("should return json for full list types", async () => {
+      const res = await request.get("/api/types");
+
+      res.should.be.json;
+      JSON.parse(res.text).length.should.equal(17);
+    });
+  });
 
   //10 POST Adds a type
+  //M
+  describe("POST /api/types", () => {
+    it("It should add a type. ", async () => {
+      const res = await request.post("/api/types");
+      res.should.be.json;
+      //M JSON.parse(res.text).length.should.equal(18);
+      JSON.parse(res.text).length.should.equal(20);
+    });
+  });
 
   //11 DELETE Deletes the given type
   describe("DELETE /api/types/:idOrName - It should delete the given type", () => {
@@ -168,19 +188,52 @@ describe("Pokemon API Server", () => {
 
   //13 GET /api/attacks -  It should return all attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //M
+  describe("GET /api/attacks - returning full list attacks", () => {
+    it("It should return all attacks", async () => {
+      const res = await request.get("/api/attacks");
+      res.should.be.json;
+      JSON.parse(res.text).special.length.should.equal(83);
+      JSON.parse(res.text).fast.length.should.equal(41);
+    });
+  });
 
   //14 GET /api/attacks/fast - It should return fast attacks
-  //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //It is able to take a query parameter limit=n that makes the endpoint only return n attacks M
+  describe("GET /api/attacks/fast - returning full list fast attacks", () => {
+    it("It should return all fast attacks", async () => {
+      const res = await request.get("/api/attacks/fast");
+
+      res.should.be.json;
+      JSON.parse(res.text).length.should.equal(41);
+    });
+  });
 
   //15 GET /api/attacks/special - It should return special attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //M
+  describe("GET /api/attacks/special - returning full list fast attacks", () => {
+    it("It should return all special attacks", async () => {
+      const res = await request.get("/api/attacks/special");
+      res.should.be.json;
+      JSON.parse(res.text).length.should.equal(83);
+    });
+  });
 
   //16 GET /api/attacks/:name - Get a specific attack by name, no matter if it is fast or special
+  //M Bite
+  describe("GET /api/attacks/:name - Get a specific attack by name", () => {
+    it("It should Get a specific attack by name", async () => {
+      const res = await request.get("/api/attacks/Tackle");
+      res.should.be.json;
+      JSON.parse(res.text).name.should.equal("Tackle");
+    });
+  });
 
   //17 GET /api/attacks/:name/pokemon
   //Returns all Pokemon (id and name) that have an attack with the given name
 
-  describe.only("GET /api/attacks/:name/pokemon - Returns all Pokemon (id and name) that have an attack with the given name", () => {
+  describe("GET /api/attacks/:name/pokemon - Returns all Pokemon (id and name) that have an attack with the given name", () => {
     it("Returns all Pokemon (id and name) that have an attack with the given name", async () => {
       const res = await request.get("/api/attacks/Bug Bite/pokemon");
       const result = JSON.parse(res.text);
@@ -205,6 +258,20 @@ describe("Pokemon API Server", () => {
   });
 
   //18 POST /api/attacks/fast or POST /api/attacks/special  -  Add an attack
+  //M
+  describe("POST /api/attacks/fast", () => {
+    it("It should add an attack. ", async () => {
+      const res = await request.post("/api/attacks/fast").send({
+        name: "Beer",
+        type: "Fire",
+        damage: 120,
+      });
+      const expectedResult = { name: "Beer", type: "Fire", damage: 120 };
+      res.should.be.json;
+      const result = JSON.parse(res.text);
+      expect(result[41]).to.deep.equal(expectedResult);
+    });
+  });
 
   //19 PATCH /api/attacks/:name - Modifies specified attack
   describe("PATCH /api/attacks/:name - It should Modifies specified attack", () => {

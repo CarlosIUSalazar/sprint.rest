@@ -131,8 +131,21 @@ const setupServer = () => {
 
   //9 GET /api/types -- It should return a list of all available types
   //It is able to take a query parameter limit=n that makes the endpoint only return n types
+  //M
+
+  app.get("/api/types", (request, response) => {
+    response.send(pokeData.types);
+  });
 
   //10 POST Adds a type -- /api/types
+  //M
+  app.post("/api/types", (request, response) => {
+    const newType = "Saiyan";
+    pokeData.types.push(newType);
+    response.send(pokeData.types);
+    // console.log(pokeData.pokemon.length)
+    //response.status(201).end();
+  });
 
   //11 DELETE /api/types/:name -- Deletes the given type
   app.delete("/api/types/:idOrName", (request, response) => {
@@ -164,14 +177,36 @@ const setupServer = () => {
 
   //13 GET /api/attacks -  It should return all attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //M
+  app.get("/api/attacks", (request, response) => {
+    response.send(pokeData.attacks);
+  });
 
   //14 GET /api/attacks/fast - It should return fast attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //M
+  app.get("/api/attacks/fast", (request, response) => {
+    response.send(pokeData.attacks.fast);
+  });
 
   //15 GET /api/attacks/special - It should return special attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
+  //M
+  app.get("/api/attacks/special", (request, response) => {
+    response.send(pokeData.attacks.special);
+  });
 
   //16 GET /api/attacks/:name - Get a specific attack by name, no matter if it is fast or special
+  //M
+  app.get("/api/attacks/:name", (request, response) => {
+    const attackName = request.params.name;
+    const result = pokeData.attacks.fast.filter(
+      (attacks) => attacks.name === attackName
+    );
+    result;
+
+    response.send(result[0]);
+  });
 
   //17 GET /api/attacks/:name/pokemon
   //Returns all Pokemon (id and name) that have an attack with the given name
@@ -198,6 +233,15 @@ const setupServer = () => {
   });
 
   //18 POST /api/attacks/fast or POST /api/attacks/special  -  Add an attack
+  //M
+  app.post("/api/attacks/fast", (request, response) => {
+    const newAttack = request.body;
+    pokeData.attacks.fast.push(newAttack);
+    console.log("newAttack :", pokeData.attacks.fast.length);
+    response.send(pokeData.attacks.fast);
+    // console.log(pokeData.pokemon.length, 'SUPPPPPPP')
+    //response.status(201).end();
+  });
 
   //19 PATCH /api/attacks/:name - Modifies specified attack
   app.patch("/api/attacks/:name", (request, response) => {
