@@ -24,7 +24,7 @@ describe("Pokemon API Server", () => {
       const res = await request.get("/api/pokemon").query({ limit: 3 });
 
       res.should.be.json;
-      console.log("res.text.length XXXXXXX:", JSON.parse(res.text).length);
+      // console.log("res.text.length XXXXXXX:", JSON.parse(res.text).length);
 
       JSON.parse(res.text).length.should.equal(3);
     });
@@ -59,19 +59,33 @@ describe("Pokemon API Server", () => {
     it("It should return the Pokemon with the given name", async () => {
       const res = await request.get("/api/pokemon/Bulbasaur");
       const result = JSON.parse(res.text || null);
-      console.log("RESSSSS", result.name);
+      // console.log("RESSSSS", result.name);
       result.name.should.equal("Bulbasaur");
     });
   });
 
   //5 It should allow you to make partial modifications to a Pokemon
-  // describe.only("PATCH /api/pokemon/:idOrName - It should allow you to make partial modifications to a Pokemon", () => {
-  //   it("it should allow to make partial modifications to a Pokemon", async () => {
-  //     const res = await request.patch("/api/pokemon/:idOrName");
-  //     // JSON.parse(res.text).id.should.equal("001");
-  //     //console.log("REESSSSS",res.text)
-  //     //console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
-  //     res.text.id.should.equal("001");
+  describe("PATCH /api/pokemon/:idOrName - It should allow you to make partial modifications to a Pokemon", () => {
+    it("it should allow to make partial modifications to a Pokemon", async () => {
+      const res = await request
+        .patch("/api/pokemon/Pikachu")
+        .send({ name: "Carlos" });
+      //const result = JSON.parse(res.text).name;
+      const result = res.body;
+      // console.log("REESSSSS",res.body)
+      //console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
+      //res.text.id.should.equal("001");
+      expect(result.name).to.equal("Carlos");
+    });
+  });
+
+  // describe(“PATCH /api/pokemon/:idOrName”, () => {
+  //   it(“should allow you to make partial modifications to a Pokemon”, async () => {
+  //     const res = await request
+  //       .patch(“/api/pokemon/1”)
+  //       .send({ name: “Carlos” });
+  //     res.should.be.json;
+  //     expect(res.body.name).to.equal(“Carlos”);
   //   });
   // });
 
@@ -81,8 +95,8 @@ describe("Pokemon API Server", () => {
       const res = await request.delete("/api/pokemon/Bulbasaur");
 
       const result = JSON.parse(res.text)[0].name;
-
-      console.log("AAABBBCCCC", result);
+      // console.log("res.test YYYYYYY", res.text)
+      // console.log("AAABBBCCCC", result);
 
       expect(result).to.equal("Ivysaur");
       //const result = JSON.parse(res.text)[0];
@@ -123,169 +137,124 @@ describe("Pokemon API Server", () => {
 
       const result = JSON.parse(res.text);
 
-      console.log("AAABBBCCCC", result);
+      // console.log("AAABBBCCCC", result);
 
       expect(result[1]).to.equal("Fire");
     });
   });
 
-  //           it("Returns status 401 if token is invalid", async () => {
-  //   const res = await request
-  //     .post("/secret/message")
-  //     .query({ token: 3 })
-  //     .send({ shout: "marco" });
-  //   res.should.have.status(401);
-  // });
+  //12 GET  /api/types/:type/pokemon -- it should return all Pokemon that are of a given type
+  //You only need to return id and name of the Pokemon, not the whole data for the Pokemon
+  describe("GET /api/types/:type/pokemon - it should return all Pokemon that are of Fairy or Dragon type", () => {
+    it("it should return all Pokemon that are of a given type", async () => {
+      const res = await request.get("/api/types/Fairy/pokemon");
+      const result = JSON.parse(res.text);
+      // console.log("FAIRYYYYYY", result)
+      //const expect = result.length;
+      //console.log("RESUUUUUUULT",res.text)
+      expect(result.length).to.equal(5);
+      //result.length.should.equal(5);
+    });
 
-  // it("Returns status 403 if token is valid, but the secret part is missing", async () => {
-  //   const res = await request.post("/secret/message").query({ token: 6 });
-  //   res.should.have.status(403);
-  // });
+    it("it should return all Pokemon that are of Dragon type", async () => {
+      const res = await request.get("/api/types/Dragon/pokemon");
+      const result = JSON.parse(res.text);
+      //console.log("DRAGOOOOON", result)
+      //const expect = result.length;
+      expect(result.length).to.equal(3);
+      // result.length.should.equal(3);
+    });
+  });
 
-  // it("Returns status 401 if anything is wrong", async () => {
-  //   const res = await request.post("/secret/message");
-  //   res.should.have.status(401);
+  //13 GET /api/attacks -  It should return all attacks
+  //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
 
-  // describe("express basics", () => {
-  //   describe("GET /teapot - modifying status", () => {
-  //     it("should return status 418", async () => {
-  //       const res = await request.get("/teapot");
-  //       res.should.have.status(418);
-  //     });
-  //   });
+  //14 GET /api/attacks/fast - It should return fast attacks
+  //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
 
-  // describe("GET /hello - returning text", () => {
-  //   it("should return the text/html 'world'", async () => {
-  //     const res = await request.get("/hello");
-  //     res.should.be.html;
-  //     res.text.should.equal("world");
-  //   });
-  // });
+  //15 GET /api/attacks/special - It should return special attacks
+  //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
 
-  // describe("GET /hellojson - returning json", () => {
-  //   it("should return the JSON for { hello: 'world' }", async () => {
-  //     const res = await request.get("/hellojson");
-  //     res.should.be.json;
-  //     JSON.parse(res.text).should.deep.equal({ hello: "world" });
-  //   });
-  // });
+  //16 GET /api/attacks/:name - Get a specific attack by name, no matter if it is fast or special
 
-  // describe("GET /greet - dealing with query parameters", () => {
-  //   it("should greet the name given in query parameter 'name' with 'Hello name!'", async () => {
-  //     const res = await request.get("/greet").query({ name: "Mia" });
-  //     /* GET /greet?name=Mia */
-  //     res.should.be.html;
-  //     res.text.should.equal("Hello Mia!");
-  //   });
-  // });
+  //17 GET /api/attacks/:name/pokemon
+  //Returns all Pokemon (id and name) that have an attack with the given name
 
-  // xdescribe("GET /:a/plus/:b - dealing with params", () => {
-  //   it("should return a JSON object with a result field", async () => {
-  //     const res = await request.get("/1/plus/1");
-  //     res.should.be.json;
-  //     JSON.parse(res.text).result.should.not.be.undefined;
-  //   });
+  describe.only("GET /api/attacks/:name/pokemon - Returns all Pokemon (id and name) that have an attack with the given name", () => {
+    it("Returns all Pokemon (id and name) that have an attack with the given name", async () => {
+      const res = await request.get("/api/attacks/Bug Bite/pokemon");
+      const result = JSON.parse(res.text);
+      // console.log("FAIRYYYYYY", result)
+      //const expect = result.length;
+      //console.log("RESUUUUUUULT",res.text)
+      const expectedObj = {
+        "010": "Caterpie",
+        "011": "Metapod",
+        "012": "Butterfree",
+        "013": "Weedle",
+        "014": "Kakuna",
+        "015": "Beedrill",
+        "046": "Paras",
+        "047": "Parasect",
+        "048": "Venonat",
+        "049": "Venomoth",
+      };
+      expect(result).to.deep.equal(expectedObj);
+      //result.length.should.equal(5);
+    });
+  });
 
-  //   it("adds 2 + 3", async () => {
-  //     const res = await request.get("/2/plus/3");
-  //     res.should.be.json;
-  //     JSON.parse(res.text).result.should.equal(5);
-  //   });
+  //18 POST /api/attacks/fast or POST /api/attacks/special  -  Add an attack
 
-  //   it("adds 3 + 2", async () => {
-  //     const res = await request.get("/3/plus/2");
-  //     res.should.be.json;
-  //     JSON.parse(res.text).result.should.equal(5);
-  //   });
-  // });
-  // });
+  //19 PATCH /api/attacks/:name - Modifies specified attack
+  describe("PATCH /api/attacks/:name - It should Modifies specified attack", () => {
+    it("it should Modifies FAST specified attack", async () => {
+      const res = await request
+        .patch("/api/attacks/Tackle")
+        .send({ name: "Jeopardy" });
+      //const result = JSON.parse(res.text).name;
+      const result = res.body;
+      // console.log("REESSSSS",res.body)
+      //console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
+      //res.text.id.should.equal("001");
+      expect(result.name).to.equal("Jeopardy");
+    });
 
-  // xdescribe("handling bodies", () => {
-  // xdescribe("/echo endpoint", () => {
-  //   it("POST /echo returns body content", async () => {
-  //     const expected = {
-  //       foo: "bar",
-  //       honey: ["I", "shrank", "the", "kids"],
-  //       loopy: {
-  //         loop: {
-  //           deeply: {
-  //             nested: [1, "123", [{ lol: "lol" }, null, null, 5]],
-  //           },
-  //         },
-  //       },
-  //     };
-  //     const res = await request.post("/echo").send(expected);
-  //     res.should.be.json;
-  //     JSON.parse(res.text).should.deep.equal(expected);
-  //   });
+    it("it should Modifies SPECIAL specified attack", async () => {
+      const res = await request
+        .patch("/api/attacks/Draining Kiss")
+        .send({ name: "Special Kiss" });
+      //const result = JSON.parse(res.text).name;
+      const result = res.body;
+      // console.log("REESSSSS",res.body)
+      //console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
+      //res.text.id.should.equal("001");
+      expect(result.name).to.equal("Special Kiss");
+    });
+  });
 
-  //   it("OPTIONS /echo flips keys and values of simple objects", async () => {
-  //     const payload = {
-  //       what: "is love?",
-  //       baby: "don't hurt me",
-  //       "don't hurt me": "no more",
-  //       "The Answer": 42,
-  //     };
+  //20 DELETE /api/attacks/:name - Deletes an attack
+  describe("DELETE /api/attacks/:name - It should delete an attack", () => {
+    it("It should delete an attack", async () => {
+      const res = await request.delete("/api/attacks/Earthquake");
 
-  //     const expected = {
-  //       "is love?": "what",
-  //       "don't hurt me": "baby",
-  //       "no more": "don't hurt me",
-  //       42: "The Answer",
-  //     };
+      const result = JSON.parse(res.text);
 
-  //     const res = await request.options("/echo").send(payload);
-  //     res.should.be.json;
-  //     JSON.parse(res.text).should.deep.equal(expected);
-  //   });
-  // });
-  // });
+      //console.log("EEEERRRRRR", result)
 
-  // xdescribe("Adding middleware", () => {
-  // xdescribe("/secret Endpoint", () => {
-  //   it("Returns status 401 when called normally", async () => {
-  //     const res = await request.get("/secret");
-  //     res.should.have.status(401);
-  //   });
+      let bool = false;
+      for (let i = 0; i < result.fast.length; i++) {
+        if (result.fast[i] === "Earthquake") {
+          bool = true;
+        }
+      }
+      for (let i = 0; i < result.special.length; i++) {
+        if (result.special[i] === "Earthquake") {
+          bool = true;
+        }
+      }
 
-  //   it("Returns status 200 when given a token query parameter that contains an even number", async () => {
-  //     const res = await request.get("/secret").query({ token: 2018 });
-  //     res.should.have.status(200);
-  //   });
-
-  //   it("Returns status 401 when given a token query parameter that is not an even number", async () => {
-  //     const res = await request.get("/secret").query({ token: 45 });
-  //     res.should.have.status(401);
-  //   });
-
-  //   xdescribe("POST /secret/message Endpoint", () => {
-  //     it("Returns 'polo' when given a valid token query and posting a JSON body { key: 42, shout: 'marco' }", async () => {
-  //       const res = await request
-  //         .post("/secret/message")
-  //         .query({ token: 2018 })
-  //         .send({ key: 42, shout: "marco" });
-  //       res.should.have.status(200);
-  //       res.should.be.html;
-  //       res.text.should.equal("polo");
-  //     });
-
-  //     it("Returns status 401 if token is invalid", async () => {
-  //       const res = await request
-  //         .post("/secret/message")
-  //         .query({ token: 3 })
-  //         .send({ shout: "marco" });
-  //       res.should.have.status(401);
-  //     });
-
-  //     it("Returns status 403 if token is valid, but the secret part is missing", async () => {
-  //       const res = await request.post("/secret/message").query({ token: 6 });
-  //       res.should.have.status(403);
-  //     });
-
-  //     it("Returns status 401 if anything is wrong", async () => {
-  //       const res = await request.post("/secret/message");
-  //       res.should.have.status(401);
-  //     });
-  //   });
-  // });
+      expect(bool).to.equal(false);
+    });
+  });
 });

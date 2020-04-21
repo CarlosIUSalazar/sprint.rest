@@ -11,6 +11,7 @@ const setupServer = () => {
 
   const app = express();
   app.use(express.json()); //MIDDLEWARE
+  app.use(express.urlencoded({ extended: false })); //Body parser middleware
 
   // console.log('pokeData :', pokeData.pokemon)
   //1
@@ -55,17 +56,32 @@ const setupServer = () => {
   // });
 
   //TODO - HOW TO ACCESS BODY
-  //5 It should allow you to make partial modifications to a Pokemon
+  //5 PATCH It should allow you to make partial modifications to a Pokemon
   app.patch("/api/pokemon/:idOrName", (request, response) => {
     const idOrName = request.params.idOrName;
-    // console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
     const result = pokeData.pokemon.filter(
       (pokemon) => pokemon.id === idOrName || pokemon.name === idOrName
     );
-    console.log("REQUESSSST", request.body.name);
+
+    // console.log("REQUESSSST", request.body, result[0].name);
     result[0].name = request.body.name;
     response.send(result[0]);
+    //response.status(200).end();
   });
+
+  // app.patch(“/api/pokemon/:key”, async (request, response) => {
+  //   const key = request.params.key;
+  //   pokeData.pokemon.forEach((pok) => {
+  //     if (
+  //       Number(pok.id) === Number(key) ||
+  //       pok.name.toLowerCase() === key.toLowerCase()
+  //     ) {
+  //       pok = Object.assign(pok, request.body);
+  //       response.send(pok);
+  //     }
+  //   });
+  //   response.status(200).end();
+  // });
 
   //6 DELETE  -- /api/pokemon/:idOrName -- It should delete the given Pokemon
   app.delete("/api/pokemon/:idOrName", (request, response) => {
@@ -109,7 +125,7 @@ const setupServer = () => {
     const result = pokeData.pokemon.filter(
       (pokemon) => pokemon.id === key || pokemon.name === key
     );
-    console.log("PIKAAAAAAAAA", result);
+    // console.log("PIKAAAAAAAAA", result);
     response.send(result[0]["Previous evolution(s)"]);
   });
 
@@ -128,9 +144,9 @@ const setupServer = () => {
         index = i;
       }
     }
-    console.log("PIKAAAA", index);
-    console.log("CHUUUU", idOrName);
-    console.log("YOOOOOO", pokeData.types);
+    // console.log("PIKAAAA", index);
+    // console.log("CHUUUU", idOrName);
+    // console.log("YOOOOOO", pokeData.types);
     pokeData.types.splice(index, 1);
 
     response.send(pokeData.types);
@@ -138,6 +154,13 @@ const setupServer = () => {
 
   //12 GET  /api/types/:type/pokemon -- it should return all Pokemon that are of a given type
   //You only need to return id and name of the Pokemon, not the whole data for the Pokemon
+  app.get("/api/types/:type/pokemon", (request, response) => {
+    const key = request.params.type;
+    const result = pokeData.pokemon.filter((poke) => poke.types.includes(key));
+
+    // console.log("PIKAAAAAAAAA", result);
+    response.send(result);
+  });
 
   //13 GET /api/attacks -  It should return all attacks
   //It is able to take a query parameter limit=n that makes the endpoint only return n attacks
@@ -152,12 +175,71 @@ const setupServer = () => {
 
   //17 GET /api/attacks/:name/pokemon
   //Returns all Pokemon (id and name) that have an attack with the given name
+  app.get("/api/attacks/:name/pokemon", (request, response) => {
+    const key = request.params.name;
+    const result = pokeData.pokemon.filter(
+      (poke) => poke.attacks.fast[0].name === key
+    );
+
+    const newResult = [];
+    const resultObj = {};
+    result.forEach((poke) => newResult.push(poke.id, poke.name));
+
+    for (let i = 0; i < newResult.length; i++) {
+      if (i % 2 !== 0) {
+        resultObj[newResult[i - 1]] = newResult[i];
+      }
+    }
+
+    // console.log("RESUUUUUUULT", resultObj)
+    // result.map(poke => )
+    // console.log("PIKAAAAAAAAA", result);
+    response.send(resultObj);
+  });
 
   //18 POST /api/attacks/fast or POST /api/attacks/special  -  Add an attack
 
   //19 PATCH /api/attacks/:name - Modifies specified attack
+  app.patch("/api/attacks/:name", (request, response) => {
+    const name = request.params.name;
+    let result = pokeData.attacks.fast.filter(
+      (attacks) => attacks.name === name
+    );
+
+    if (result.length === 0) {
+      result = pokeData.attacks.special.filter(
+        (attacks) => attacks.name === name
+      );
+    }
+    // console.log("ATTACKKKSSSSSS", request.body, result[0].name);
+    result[0].name = request.body.name;
+    response.send(result[0]);
+    //response.status(200).end();
+  });
 
   //20 DELETE /api/attacks/:name - Deletes an attack
+  app.delete("/api/attacks/:name", (request, response) => {
+    const attack = request.params.name;
+
+    let index = 0;
+    for (let i = 0; i < pokeData.attacks.fast.length; i++) {
+      if (pokeData.attacks.fast[i] === attack) {
+        index = i;
+      }
+    }
+    for (let i = 0; i < pokeData.attacks.special.length; i++) {
+      if (pokeData.attacks.special[i] === attack) {
+        index = i;
+      }
+    }
+
+    // console.log("PIKAAAAaaaaaaaaaaaaaaaaaaaaaa", pokeData.attacks);
+    // console.log("CHUUUU", attack);
+    //console.log("YOOOOOO", pokeData.attacks);
+    pokeData.types.splice(index, 1);
+
+    response.send(pokeData.attacks);
+  });
 
   return app;
 };
