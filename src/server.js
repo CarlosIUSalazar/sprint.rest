@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-unused-vars */
 const express = require("express");
@@ -53,25 +54,64 @@ const setupServer = () => {
   //   response.send(result[0]);
   // });
 
+  //TODO - HOW TO ACCESS BODY
   //5 It should allow you to make partial modifications to a Pokemon
-  app.patch("/api.pokemon/:idOrName", (request, response, next) => {
+  app.patch("/api/pokemon/:idOrName", (request, response) => {
     const idOrName = request.params.idOrName;
-    console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", idOrName);
+    // console.log("idOrNameeeeeeeeeeeeeeeeeeeeeeeeeeee :", request.body);
     const result = pokeData.pokemon.filter(
       (pokemon) => pokemon.id === idOrName || pokemon.name === idOrName
     );
+    console.log("REQUESSSST", request.body.name);
+    result[0].name = request.body.name;
     response.send(result[0]);
-    response.ok();
   });
 
   //6 DELETE  -- /api/pokemon/:idOrName -- It should delete the given Pokemon
+  app.delete("/api/pokemon/:idOrName", (request, response) => {
+    const idOrName = request.params.idOrName;
+
+    // const result = pokeData.pokemon.filter((pokemon) => pokemon.id === idOrName || pokemon.name === idOrName);
+
+    // if(typeof(idOrName) === "number") {
+    //   pokeData.pokemon.splice([idOrName-1],1)
+    // }
+    let index = 0;
+    for (let i = 0; i < pokeData.pokemon.length; i++) {
+      if (
+        pokeData.pokemon[i].id === idOrName ||
+        pokeData.pokemon[i].name === idOrName
+      ) {
+        index = i;
+      }
+    }
+
+    pokeData.pokemon.splice(index, 1);
+
+    response.send(pokeData.pokemon);
+  });
 
   //7 GET /api/pokemon/:idOrName/evolutions -- It should return the evolutions a Pokemon has.
   //Note that some Pokemon don't have evolutions, it should return an empty array in this case
   //Example: GET /api/pokemon/staryu/evolutions should return [ { "id": 121, "name": "Starmie" } ]
+  app.get("/api/pokemon/:idOrName/evolutions", (request, response) => {
+    const key = request.params.idOrName;
+    const result = pokeData.pokemon.filter(
+      (pokemon) => pokemon.id === key || pokemon.name === key
+    );
+    response.send(result[0].evolutions);
+  });
 
   //8 GET -- /api/pokemon/:idOrName/evolutions/previous -- For evolved Pokemon, this should return it's previous evolutions
   //Example: GET /api/pokemon/17/evolutions/previous should return [ { "id": 16, "name": "Pidgey" } ]
+  app.get("/api/pokemon/:idOrName/evolutions/previous", (request, response) => {
+    const key = request.params.idOrName;
+    const result = pokeData.pokemon.filter(
+      (pokemon) => pokemon.id === key || pokemon.name === key
+    );
+    console.log("PIKAAAAAAAAA", result);
+    response.send(result[0]["Previous evolution(s)"]);
+  });
 
   //9 GET /api/types -- It should return a list of all available types
   //It is able to take a query parameter limit=n that makes the endpoint only return n types
@@ -79,6 +119,22 @@ const setupServer = () => {
   //10 POST Adds a type -- /api/types
 
   //11 DELETE /api/types/:name -- Deletes the given type
+  app.delete("/api/types/:idOrName", (request, response) => {
+    const idOrName = request.params.idOrName;
+
+    let index = 0;
+    for (let i = 0; i < pokeData.types.length; i++) {
+      if (pokeData.types[i] === idOrName) {
+        index = i;
+      }
+    }
+    console.log("PIKAAAA", index);
+    console.log("CHUUUU", idOrName);
+    console.log("YOOOOOO", pokeData.types);
+    pokeData.types.splice(index, 1);
+
+    response.send(pokeData.types);
+  });
 
   //12 GET  /api/types/:type/pokemon -- it should return all Pokemon that are of a given type
   //You only need to return id and name of the Pokemon, not the whole data for the Pokemon
