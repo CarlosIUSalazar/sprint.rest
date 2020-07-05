@@ -1,91 +1,92 @@
-# スプリント REST
-### This was created during my time as a [Code Chrysalis](https://codechrysalis.io) Student
+# sprint.rest
 
-RESTful API のエンドポイントを作成するために、Express を使いこなすときが来ました。
-このスプリントでは、ポケモンのデータに簡単にアクセスして操作するための API を作成します。
+It's time to get more used to express while writing RESTful API endpoints.
+In this sprint you will create an API to easily access and manipulate data from Pokemon.
 
-## 達成目標
+## Objectives
 
-- `express` を使用して RESTful CRUD API をセットアップできる。
-- 複数のファイルをより快適に操作できる。
-- `express` のエンドポイントをテストするのに役立つ、新しいライブラリ（`chai-http`）を学ぶ。
-- テストの作成を強制することにより、TDD が重要であるという認識を強める。
+- Be able to setup a RESTful CRUD API using `express`
+- Get more comfortable working with multiple files
+- Learn a new library (`chai-http`) to help you with testing `express` endpoints
+- Re-inforce the importance of TDD by forcing you to write your own tests
 
-## はじめに
+## Getting Started
 
-`package.json` を見て、このリポジトリがどのように構成されているか確認してみましょう。
-さまざまなファイルを調べて、ファイル間のデータの流れと、作業すべき箇所を理解しましょう。
-このリポジトリには、最小限のスケルトンが配置されていますが、`express` サーバーのセットアップ（およびルーティングの整理）はすべてあなた次第です。
-`underscore` がすでにこのリポジトリに追加されているので、自由に使用してください。もちろん、必要に応じて別のライブラリを使用することもできます。
+Look at `package.json` and get a feel for how this repository is set up.
+Look around the different files, get an understanding for how data flows between them and where you will mainly be working.
+While there is a minimum skeleton laid out here, setting up the `express` server (and maybe organizing your routes) is all up to you.
+`underscore` is already added to this repository, so feel free to use it, of course you can also use a different library if you want.
 
-## 基本レベル
+## Basic Requirements
 
-**重要**: `.json` ソースファイルを変更する必要はありません。オブジェクト/配列に直接変更を加えてください。これは、サーバーの再起動時に変更が失われることを意味しますが、今日のスプリントの焦点は `express` と RESTful デザインに慣れることです。
+**Important**: There is no need to modify the source `.json` files. Do any modifications to the object/array directly. This does mean that changes are lost upon restart of the server, but the focus today is on getting familiar with `express` and RESTful design.
 
-テストを作成し、次のエンドポイントを実装しましょう。
+Write tests and implement the following endpoints:
 
 - `GET /api/pokemon`
-  - ポケモンの完全なリストを返してください。
-  - 最初の `n` 体のポケモンのみを返すクエリパラメータ `limit=n` を使用できるエンドポイント作成してください。
+  - It should return the full list of Pokemon
+  - It is able to take a query parameter `limit=n` that makes the endpoint only return the first `n` Pokemon
 - `POST /api/pokemon`
-  - ポケモンを追加してください。基本レベルの場合、データに問題がないかバリデーションを行う必要はありません。
+  - It should add a Pokemon. For Basic Requirements, verification that the data is good is not necessary
 - `GET /api/pokemon/:id`
-  - 指定した ID のポケモンを返してください。例：`GET /api/pokemon/042` は Golbat のデータを返すようにしてください。
-  - ゼロパッディングを行う必要はないはずなので、`GET /api/pokemon/42` でも同様に Golbat を返すようにしてください。
+  - It should return the Pokemon with the given id. Example: `GET /api/pokemon/042` should return the data for Golbat
+  - Leading zeroes should not be necessary, so `GET /api/pokemon/42` would also return Golbat
 - `GET /api/pokemon/:name`
-  - 指定した名前のポケモンを返してください。例：`GET /api/pokemon/Mew` は Mew のデータを返すようにしてください。
-  - 名前は大文字と小文字を区別すべきではありません。
-  - ヒント：`GET /api/pokemon/:id` と `GET /api/pokemon/:name` を同じエンドポイントとして実装してみたいと思いませんか？。
+  - It should return the Pokemon with given name. Example: `GET /api/pokemon/Mew` should return the data for Mew
+  - The name should be case-insensitive
+  - Hint: You might want to try handling this one and the last one in the same route.
 - `PATCH /api/pokemon/:idOrName`
-  - 指定したポケモンに部分的な変更を加えられるようにください。
+  - It should allow you to make partial modifications to a Pokemon
 - `DELETE /api/pokemon/:idOrName`
-  - 指定したポケモンを削除してください。
+  - It should delete the given Pokemon
 - `GET /api/pokemon/:idOrName/evolutions`
-  - 指定したポケモンが持っている進化系を返してください。
-    - 一部のポケモンには進化系がないため、この場合は空の配列を返す必要があることに注意してください。
-    - 例：`GET /api/pokemon/staryu/evolutions` は `[ { "id": 121, "name": "Starmie" } ]` を返すようにしてください。
+  - It should return the evolutions a Pokemon has.
+    - Note that some Pokemon don't have evolutions, it should return an empty array in this case
+    - Example: `GET /api/pokemon/staryu/evolutions` should return `[ { "id": 121, "name": "Starmie" } ]`
 - `GET /api/pokemon/:idOrName/evolutions/previous`
-  - 進化したポケモンの場合、進化前のポケモンを返してください。
-  - 例：`GET /api/pokemon/17/evolutions/previous` は `[ { "id": 16, "name": "Pidgey" } ]` を返すようにしてください。
+  - For evolved Pokemon, this should return it's previous evolutions
+  - Example: `GET /api/pokemon/17/evolutions/previous` should return `[ { "id": 16, "name": "Pidgey" } ]`
 - `GET /api/types`
-  - 利用可能なすべてのタイプのリストを返してください。
-  - エンドポイントに `n` タイプのみを返すクエリパラメータ `limit=n` を使用できるようにしてください。
+  - It should return a list of all available types
+  - It is able to take a query parameter `limit=n` that makes the endpoint only return `n` types
 - `POST /api/types`
-  - タイプを追加してください。
+  - Adds a Type
 - `DELETE /api/types/:name`
-  - 指定したタイプを削除してください。
+  - Deletes the given type
 - `GET /api/types/:type/pokemon`
-  - 指定したタイプのすべてのポケモンを返してください。
-    - ポケモンの全データではなく、ポケモンの `id` and `name` のみを返してください。
+  - It should return all Pokemon that are of a given type
+    - You only need to return `id` and `name` of the Pokemon, not the whole data for the Pokemon
 - `GET /api/attacks`
-  - すべてのアタックの種類を返してください。
-  - エンドポイントに `n` アタックのみを返すクエリパラメータ `limit=n` を使用できるようにしてください。
+  - It should return all attacks
+  - It is able to take a query parameter `limit=n` that makes the endpoint only return `n` attacks
 - `GET /api/attacks/fast`
-  - ノーマルアタック（fast attacks）を返してください。
-  - エンドポイントに `n` アタックのみを返すクエリパラメータ `limit=n` を使用できるようにしてください。
-- `GET /api/attacks/special` -スペシャルアタック（special attacks）を返してください。 -エンドポイントに `n` アタックのみを返すクエリパラメータ `limit=n` を使用できるようにしてください。
+  - It should return fast attacks
+  - It is able to take a query parameter `limit=n` that makes the endpoint only return `n` attacks
+- `GET /api/attacks/special`
+  - It should return special attacks
+  - It is able to take a query parameter `limit=n` that makes the endpoint only return `n` attacks
 - `GET /api/attacks/:name`
-  - ノーマルアタックであろうとスペシャルアタックであろうと、指定した名前でヒットしたアタックを返してください。
+  - Get a specific attack by name, no matter if it is fast or special
 - `GET /api/attacks/:name/pokemon`
-  - 指定した名前のアタックを持つすべてのポケモン（`id` および `name`）を返してください。
-- `POST /api/attacks/fast` または `POST /api/attacks/special`
-  - アタックを追加してください。
+  - Returns all Pokemon (`id` and `name`) that have an attack with the given name
+- `POST /api/attacks/fast` or `POST /api/attacks/special`
+  - Add an attack
 - `PATCH /api/attacks/:name`
-  - 指定したアタックを変更してください。
+  - Modifies specified attack
 - `DELETE /api/attacks/:name`
-  - 指定したアタックを削除してください。
+  - Deletes an attack
 
-## 中級レベル
+## Medium Requirements
 
-- すべての操作について、データに対する適切なバリデーションを追加しましょう。
-- ページネーションをそれぞれのエンドポイントに追加しましょう。 `GET /api/pokemon` `GET /api/types` `GET /api/attacks` `GET /api/attacks/fast` `GET /api/attacks/special`
-  - クライアントがデータコレクションを正しくページングできるように、追加のクエリパラメーターが必要となります。
+- Add proper validation of data for all operations.
+- Add pagination to your collection endpoints `GET /api/pokemon` `GET /api/types` `GET /api/attacks` `GET /api/attacks/fast` `GET /api/attacks/special`
+  - You will need additional query parameters so your client can page through a collection correctly
 
-## 応用レベル
+## Advanced Requirements
 
-ポケモンのデータを適切にネストすることで、`/pokemon` で終わるすべてのエンドポイントを真の RESTful API にしましょう。
-例：`GET /api/attacks/:attackName/pokemon/:idOrName/evolutions` は機能するはずです。また、明らかにアタックを持たないポケモン ID または名前が指定された場合、404 を返すはずなので、これには、パラメーターの適切なバリデーションが必要となります。
+Make all endpoints ending in `/pokemon` truly RESTful, by properly nesting the Pokemon resource
+Example: `GET /api/attacks/:attackName/pokemon/:idOrName/evolutions` should also work, including proper verification of the parameters, because obviously if a Pokemon id or name was given that does not have the attack, then a 404 should be thrown.
 
-## ナイトメアモード
+## Nightmare Mode
 
-データベースを追加し、そこにポケモンのデータを入れて、それを使用してデータのやり取りや変更の保存ができるようにしましょう。
+Add a database, put your Pokemon data in it and use that to retrieve and store changes.
